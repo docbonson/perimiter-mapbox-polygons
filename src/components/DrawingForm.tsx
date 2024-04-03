@@ -1,13 +1,26 @@
 import React from 'react'
 import { GeoJsonProperties } from 'geojson'
 
+/**
+ * Props for the DrawingForm component.
+ * @typedef {object} DrawingFormProps
+ * @property {string} id - The ID of the drawing.
+ * @property {GeoJsonProperties} properties - The properties of the drawing.
+ * @property {function} onSubmit - Function called when the form is submitted.
+ * @property {React.FormEvent<HTMLFormElement>} onSubmit.event - The form submission event.
+ * @property {string} onSubmit.drawingId - The ID of the drawing.
+ * @property {any} onSubmit.feature - The feature representing the drawing.
+ * @property {function} onDelete - Function called when the drawing is deleted.
+ * @property {string} onDelete.id - The ID of the drawing to be deleted.
+ */
+
 interface DrawingFormProps {
   id: string
   properties: GeoJsonProperties
   onSubmit: (
     event: React.FormEvent<HTMLFormElement>,
     drawingId: string,
-    feature: any, // Adjust the type according to your feature type
+    feature: any,
   ) => void
   onDelete: (id: string) => void
 }

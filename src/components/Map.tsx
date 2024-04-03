@@ -158,14 +158,6 @@ const Map = () => {
       <div className="map-container" ref={mapContainerRef} />
       <div className="section" style={{ padding: '1rem' }}>
         <h1>Map Drawings</h1>
-        {isDrawing && (
-          <DrawingForm
-            id="new-drawing"
-            properties={{ name: '' }}
-            onSubmit={handleNameChange}
-            onDelete={() => setIsDrawing(false)}
-          />
-        )}
         {featureCollection?.features.map((feature) => (
           <DrawingForm
             key={feature.id}
