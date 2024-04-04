@@ -1,7 +1,17 @@
 import Map from './components/Map'
-function App() {
+
+const App = () => {
+  // Check for the presence of the Mapbox access token
+  if (!process.env.REACT_APP_API_KEY) {
+    return (
+      <div>
+        <p>Please set REACT_APP_API_KEY to your Mapbox access token.</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="App">
+    <div>
       <Map />
     </div>
   )

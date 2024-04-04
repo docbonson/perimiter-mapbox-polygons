@@ -120,6 +120,30 @@ const Map = () => {
     mapRef.current?.setStyle(`mapbox://styles/mapbox/${style}`)
   }, [])
 
+  // Callback function to update feature collection when drawing is submitted
+  const onDrawingSubmit = useCallback(
+    (drawingId: string, newName: string) => {
+      // Find the drawing in the feature collection and update its properties
+      const updatedFeatures = featureCollection.features.map((feature) => {
+        if (feature.id === drawingId) {
+          return {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              name: newName,
+            },
+          }
+        }
+        return feature
+      })
+      setFeatureCollection({
+        ...featureCollection,
+        features: updatedFeatures,
+      })
+    },
+    [featureCollection],
+  )
+
   return (
     <div style={{ minHeight: '100vh' }}>
       {error && <div>{error}</div>}
@@ -132,7 +156,7 @@ const Map = () => {
             key={feature.id}
             id={feature.id as string}
             properties={feature.properties}
-            onSubmit={() => {}} // Replace with actual onSubmit function
+            onSubmit={onDrawingSubmit}
             onDelete={handleDelete}
           />
         ))}
