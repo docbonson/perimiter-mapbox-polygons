@@ -9,6 +9,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import DrawingForm from './DrawingForm'
 import { Geometry, GeoJsonProperties, FeatureCollection } from 'geojson'
+import MapStyleMenu from './MapStylesMenu'
 
 // Token for Mapbox
 const accessToken = process.env.REACT_APP_API_KEY
@@ -38,6 +39,9 @@ const Map = () => {
   const [featureCollection, setFeatureCollection] = useState<
     FeatureCollection<Geometry, GeoJsonProperties>
   >({ type: 'FeatureCollection', features: [] })
+
+  // Error state for handling potential errors during map initialization
+  const [error, setError] = useState<string | null>(null)
 
   // Sync React state with Mapbox feature state.
   const handleSyncFeatures = useCallback(() => {
@@ -72,22 +76,27 @@ const Map = () => {
     // Make sure we initialize the map only once
     if (mapRef.current || !mapContainerRef.current) return
 
-    // Initialize the map
-    mapRef.current = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-91.874, 42.76],
-      zoom: 5,
-      accessToken,
-    })
+    try {
+      // Initialize the map
+      mapRef.current = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [-91.874, 42.76],
+        zoom: 5,
+        accessToken,
+      })
 
-    // Add the draw control to the map
-    mapRef.current?.addControl(Draw, 'top-left')
+      // Add the draw control to the map
+      mapRef.current?.addControl(Draw, 'top-left')
 
-    // Add event listeners for map drawing actions
-    mapRef.current?.on('draw.create', onDrawCreate)
-    mapRef.current?.on('draw.delete', onDrawDelete)
-    mapRef.current?.on('draw.update', onDrawUpdate)
+      // Add event listeners for map drawing actions
+      mapRef.current?.on('draw.create', onDrawCreate)
+      mapRef.current?.on('draw.delete', onDrawDelete)
+      mapRef.current?.on('draw.update', onDrawUpdate)
+    } catch (error) {
+      // Handle map initialization errors
+      setError('Error initializing the map')
+    }
 
     return () => {
       // Clean up event listeners
@@ -106,9 +115,16 @@ const Map = () => {
     [handleSyncFeatures],
   )
 
+  // Handles changing map style
+  const handleChangeMapStyle = useCallback((style: string) => {
+    mapRef.current?.setStyle(`mapbox://styles/mapbox/${style}`)
+  }, [])
+
   return (
     <div style={{ minHeight: '100vh' }}>
+      {error && <div>{error}</div>}
       <div className="map-container" ref={mapContainerRef} />
+      <MapStyleMenu onChange={handleChangeMapStyle} />
       <div className="section" style={{ padding: '1rem' }}>
         <h1>Map Drawings</h1>
         {featureCollection?.features.map((feature) => (

@@ -61,7 +61,7 @@ const DrawingForm: React.FC<DrawingFormProps> = ({
       elevation={3}
       style={{
         padding: '16px',
-        margin: 'auto', // Center the form horizontally
+        margin: 'auto',
         display: 'flex',
         alignItems: 'center',
         maxWidth: '70%',
