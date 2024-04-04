@@ -1,24 +1,22 @@
+import React, { useEffect, useRef, useCallback, useState } from 'react'
+import mapboxgl, { Map as MapGL } from 'mapbox-gl'
 import MapboxDraw, {
   DrawCreateEvent,
   DrawDeleteEvent,
   DrawUpdateEvent,
 } from '@mapbox/mapbox-gl-draw'
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
-import mapboxgl, { Map as MapGL } from 'mapbox-gl'
-import {
-  Feature,
-  Geometry,
-  GeoJsonProperties,
-  FeatureCollection,
-} from 'geojson'
-import DrawingForm from './DrawingForm'
-
-// Mapbox related styles
 import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import DrawingForm from './DrawingForm'
+import { Geometry, GeoJsonProperties, FeatureCollection } from 'geojson'
 
-// Token from Mapbox
+// Token for Mapbox
 const accessToken = process.env.REACT_APP_API_KEY
+
+// Check if Mapbox access token is provided
+if (!accessToken) {
+  throw new Error('Mapbox access token is not provided.')
+}
 
 // Initialize the draw plugin
 const Draw = new MapboxDraw({
@@ -37,79 +35,34 @@ const Map = () => {
   const mapRef = useRef<MapGL | null>(null)
   // Ref for the container HTML. Mapbox needs this to initialize correctly.
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
-
   const [featureCollection, setFeatureCollection] = useState<
     FeatureCollection<Geometry, GeoJsonProperties>
   >({ type: 'FeatureCollection', features: [] })
 
-  const [isDrawing, setIsDrawing] = useState(false)
-
-  /**
-   * Sync React state with Mapbox feature state.
-   */
+  // Sync React state with Mapbox feature state.
   const handleSyncFeatures = useCallback(() => {
     setFeatureCollection(Draw.getAll())
   }, [])
 
-  /**
-   * Called when creating a drawing on the map.
-   */
+  // Called when creating a drawing on the map.
   const onDrawCreate = useCallback(
     (e: DrawCreateEvent) => {
-      // Actions to be done on draw create
-      console.log('calling on draw create', e)
-      setIsDrawing(true)
       handleSyncFeatures()
     },
     [handleSyncFeatures],
   )
 
-  /**
-   * Called when deleting a drawing on the map.
-   */
+  // Called when deleting a drawing on the map.
   const onDrawDelete = useCallback(
     (e: DrawDeleteEvent) => {
-      // Actions to be done on draw delete
-      console.log('calling on draw delete', e)
-      setIsDrawing(false)
       handleSyncFeatures()
     },
     [handleSyncFeatures],
   )
 
-  /**
-   * Called when updating a drawing on the map.
-   */
+  // Called when updating a drawing on the map.
   const onDrawUpdate = useCallback(
     (e: DrawUpdateEvent) => {
-      // Actions to be done on draw update
-      console.log('calling on draw update', e)
-      handleSyncFeatures()
-    },
-    [handleSyncFeatures],
-  )
-
-  /**
-   * Handles updating the name property when a drawing is updated.
-   */
-  const handleNameChange = useCallback(
-    (
-      event: FormEvent<HTMLFormElement>,
-      drawingId: string | number | undefined,
-      feature: Feature<Geometry, GeoJsonProperties>,
-    ) => {
-      event.preventDefault()
-
-      if (drawingId != null) {
-        // Get the form information, and the name specifically
-        const form = new FormData(event.target as HTMLFormElement)
-        const newName = form.get('name')
-
-        // If we have a name to update, update the feature
-        if (newName) {
-          Draw.setFeatureProperty(`${drawingId}`, 'name', newName)
-        }
-      }
       handleSyncFeatures()
     },
     [handleSyncFeatures],
@@ -144,10 +97,10 @@ const Map = () => {
     }
   }, [onDrawCreate, onDrawDelete, onDrawUpdate])
 
+  // Handles deleting a drawing
   const handleDelete = useCallback(
     (id: string) => {
       Draw.delete(id)
-      setIsDrawing(false)
       handleSyncFeatures()
     },
     [handleSyncFeatures],
@@ -163,7 +116,7 @@ const Map = () => {
             key={feature.id}
             id={feature.id as string}
             properties={feature.properties}
-            onSubmit={handleNameChange}
+            onSubmit={() => {}} // Replace with actual onSubmit function
             onDelete={handleDelete}
           />
         ))}
