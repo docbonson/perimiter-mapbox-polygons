@@ -9,10 +9,10 @@ import {
 
 // Map styles data
 const mapStyles = [
+  { label: 'Streets', value: 'streets-v12' },
   { label: 'Satellite Streets', value: 'satellite-streets-v12' },
   { label: 'Light', value: 'light-v11' },
   { label: 'Dark', value: 'dark-v11' },
-  { label: 'Streets', value: 'streets-v12' },
   { label: 'Outdoors', value: 'outdoors-v12' },
 ]
 
@@ -49,7 +49,7 @@ const MapStyleMenu: React.FC<MapStyleMenuProps> = ({ onChange }) => (
       Map Styles
     </h3>
     <FormControl component="fieldset">
-      <RadioGroup name="toggle">
+      <RadioGroup name="toggle" defaultValue="streets-v12">
         {mapStyles.map(({ label, value }) => (
           <FormControlLabel
             key={value}

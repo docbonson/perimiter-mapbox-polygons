@@ -65,6 +65,7 @@ const DrawingForm: React.FC<DrawingFormProps> = ({
         display: 'flex',
         alignItems: 'center',
         maxWidth: '70%',
+        marginBottom: '8px',
       }}
     >
       <Typography style={{ marginRight: '16px' }}>Polygon:</Typography>
