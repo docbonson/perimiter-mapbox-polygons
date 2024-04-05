@@ -64,7 +64,7 @@ const DrawingForm: React.FC<DrawingFormProps> = ({
         margin: 'auto',
         display: 'flex',
         alignItems: 'center',
-        maxWidth: '70%',
+        maxWidth: '80%',
         marginBottom: '8px',
       }}
     >

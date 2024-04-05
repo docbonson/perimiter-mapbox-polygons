@@ -1,11 +1,6 @@
-import React from 'react'
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Box,
-} from '@mui/material'
+import React, { useState } from 'react'
+import { Menu, MenuItem, IconButton, Paper } from '@mui/material'
+import MapIcon from '@mui/icons-material/Map'
 
 // Map styles data
 const mapStyles = [
@@ -21,48 +16,53 @@ type MapStyleMenuProps = {
   onChange: (style: string) => void
 }
 
-// MapStyleMenu component
-const MapStyleMenu: React.FC<MapStyleMenuProps> = ({ onChange }) => (
-  <Box
-    id="menu"
-    sx={{
-      position: 'absolute',
-      top: 20,
-      right: 20,
-      zIndex: 999,
-      background: '#ffffff',
-      boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-      borderRadius: '8px',
-      padding: '10px',
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
-    }}
-  >
-    <h3
+const MapStyleMenu: React.FC<MapStyleMenuProps> = ({ onChange }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  return (
+    <Paper
+      elevation={3}
       style={{
-        margin: '0 0 10px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        color: '#333333',
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        zIndex: 999,
+        background: '#f0f0f0',
+        borderRadius: '10px',
+        padding: '5px',
       }}
     >
-      Map Styles
-    </h3>
-    <FormControl component="fieldset">
-      <RadioGroup name="toggle" defaultValue="streets-v12">
+      <IconButton onClick={handleClick} color="inherit" aria-label="map styles">
+        <MapIcon />
+      </IconButton>
+      <Menu
+        id="map-styles-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
         {mapStyles.map(({ label, value }) => (
-          <FormControlLabel
+          <MenuItem
             key={value}
-            value={value}
-            control={<Radio color="primary" />}
-            label={label}
-            onChange={() => onChange(value)}
-            sx={{ mb: '5px' }}
-          />
+            onClick={() => {
+              onChange(value)
+              handleClose()
+            }}
+          >
+            {label}
+          </MenuItem>
         ))}
-      </RadioGroup>
-    </FormControl>
-  </Box>
-)
+      </Menu>
+    </Paper>
+  )
+}
 
 export default MapStyleMenu

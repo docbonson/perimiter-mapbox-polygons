@@ -10,6 +10,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import DrawingForm from './DrawingForm'
 import { Geometry, GeoJsonProperties, FeatureCollection } from 'geojson'
 import MapStyleMenu from './MapStylesMenu'
+import { Paper, Typography, Divider } from '@mui/material'
 
 // Token for Mapbox
 const accessToken = process.env.REACT_APP_API_KEY
@@ -149,18 +150,31 @@ const Map = () => {
       {error && <div>{error}</div>}
       <div className="map-container" ref={mapContainerRef} />
       <MapStyleMenu onChange={handleChangeMapStyle} />
-      <div className="section" style={{ padding: '1rem' }}>
-        <h1>Map Drawings</h1>
-        {featureCollection?.features.map((feature) => (
-          <DrawingForm
-            key={feature.id}
-            id={feature.id as string}
-            properties={feature.properties}
-            onSubmit={onDrawingSubmit}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
+      <Paper
+        elevation={3}
+        style={{
+          margin: '1rem',
+          padding: '1rem',
+          background: '#f5f5f5',
+          borderRadius: '8px',
+        }}
+      >
+        <Typography variant="h4" gutterBottom style={{ color: '#333' }}>
+          Map Drawings
+        </Typography>
+        <Divider />
+        <div style={{ marginTop: '1rem' }}>
+          {featureCollection?.features.map((feature) => (
+            <DrawingForm
+              key={feature.id}
+              id={feature.id as string}
+              properties={feature.properties}
+              onSubmit={onDrawingSubmit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      </Paper>
     </div>
   )
 }
