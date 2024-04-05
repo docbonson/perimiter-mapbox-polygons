@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useState, useCallback } from 'react'
 import { GeoJsonProperties } from 'geojson'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Paper from '@mui/material/Paper'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 interface DrawingFormProps {
   /** Unique identifier for the drawing */
@@ -25,36 +26,43 @@ const DrawingForm: React.FC<DrawingFormProps> = ({
   onSubmit,
   onDelete,
 }: DrawingFormProps) => {
+  // State variables
   const [newName, setNewName] = useState(properties?.name || '')
   const [inputValue, setInputValue] = useState('')
   const [isEditing, setIsEditing] = useState(false)
 
-  const handleFormSubmit = (event?: FormEvent<HTMLFormElement>) => {
-    if (event) {
-      event.preventDefault()
-    }
-    if (inputValue.trim() !== '') {
-      setNewName(inputValue.trim())
-      onSubmit(id, inputValue.trim())
-      setInputValue('')
-      setIsEditing(false) // Exit edit mode after submission
-    }
-  }
+  // Callback to handle form submission
+  const handleFormSubmit = useCallback(
+    (event?: FormEvent<HTMLFormElement>) => {
+      if (event) {
+        event.preventDefault()
+      }
+      if (inputValue.trim() !== '') {
+        setNewName(inputValue.trim())
+        onSubmit(id, inputValue.trim())
+        setInputValue('')
+        setIsEditing(false) // Exit edit mode after submission
+      }
+    },
+    [id, inputValue, onSubmit],
+  )
 
-  /**
-   * Handles input change.
-   */
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value)
-  }
+  // Callback to handle input change
+  const handleNameChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(event.target.value)
+    },
+    [],
+  )
 
-  /**
-   * Handles click on edit button.
-   */
-  const handleEditClick = () => {
+  // Callback to handle click on edit button
+  const handleEditClick = useCallback(() => {
     setIsEditing(true) // Enter edit mode
     setInputValue(newName) // Populate input field with current name
-  }
+  }, [newName])
+
+  // Check for small screen size using MUI useMediaQuery hook
+  const isSmallScreen = useMediaQuery('(max-width:480px)')
 
   return (
     <Paper
@@ -64,11 +72,14 @@ const DrawingForm: React.FC<DrawingFormProps> = ({
         margin: 'auto',
         display: 'flex',
         alignItems: 'center',
-        maxWidth: '80%',
+        maxWidth: isSmallScreen ? '100%' : '80%', // Set maxWidth to 100% on small screens
         marginBottom: '8px',
       }}
     >
-      <Typography style={{ marginRight: '16px' }}>Polygon:</Typography>
+      {/* Render Typography only if not on a small screen */}
+      {!isSmallScreen && (
+        <Typography style={{ marginRight: '16px' }}>Polygon:</Typography>
+      )}
       {isEditing ? (
         <TextField
           fullWidth
@@ -81,6 +92,9 @@ const DrawingForm: React.FC<DrawingFormProps> = ({
             }
           }}
           placeholder="Name this shape"
+          inputProps={{
+            style: { fontSize: isSmallScreen ? '12px' : 'inherit' },
+          }} // Adjust placeholder font size
           style={{ flex: 1, marginRight: '8px' }}
         />
       ) : (
